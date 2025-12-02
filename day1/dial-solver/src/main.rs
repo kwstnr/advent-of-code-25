@@ -17,7 +17,7 @@ fn main() {
 
     let result = instructions
         .iter()
-        .fold(Dial::new(), |acc, instruction| acc.rotate(instruction.clone()));
+        .fold(Dial::new(), |acc, instruction| acc.rotate(instruction));
 
     println!("result: {0}", result.zero_counter);
 }

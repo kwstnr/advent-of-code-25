@@ -22,10 +22,10 @@ impl Dial {
         }
     }
 
-    pub fn rotate(self, instruction: Instruction) -> Self {
+    pub fn rotate(self, instruction: &Instruction) -> Self {
         let new_position = match instruction {
             Instruction::R(amount) => (self.position + amount).rem_euclid(100),
-            Instruction::L(amount) => Dial::rotate_left(self.position, amount)
+            Instruction::L(amount) => Dial::rotate_left(self.position, *amount)
         };
         Dial {
             position: new_position,
