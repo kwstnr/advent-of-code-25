@@ -2,6 +2,7 @@ use std::env;
 
 mod parser;
 mod range_preprocessor;
+mod repetition_finder;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
