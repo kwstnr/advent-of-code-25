@@ -6,9 +6,9 @@ pub struct Dial {
 }
 
 impl Dial {
-    pub fn new() -> Self {
+    pub fn new(starting_position: u8) -> Self {
         Dial {
-            position: 50,
+            position: <u16>::from(starting_position),
             zero_counter: 0
         }
     }
@@ -30,6 +30,23 @@ impl Dial {
         Dial {
             position: new_position,
             zero_counter: self.zero_counter + <bool as Into<u16>>::into(new_position == 0)
+        }
+    }
+
+    pub fn rotate_part2(self, instruction: &Instruction) -> Self {
+        let (new_position, times_surpassed_zero) = match instruction {
+            Instruction::R(amount) => (
+                (self.position + amount).rem_euclid(100),
+                (self.position + amount) / 100
+            ),
+            Instruction::L(amount) => (
+                Dial::rotate_left(self.position, *amount),
+                (amount / 100) + <bool as Into<u16>>::into(amount > &self.position)
+            )
+        };
+        Dial {
+            position: new_position,
+            zero_counter: self.zero_counter + times_surpassed_zero
         }
     }
 }

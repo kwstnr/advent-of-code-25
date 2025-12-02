@@ -15,10 +15,14 @@ fn main() {
     let lines = file_content.lines().collect::<Vec<&str>>();
     let instructions = parser::parse(lines);
 
-    let result = instructions
+    let result_part1 = instructions
         .iter()
-        .fold(Dial::new(), |acc, instruction| acc.rotate(instruction));
+        .fold(Dial::new(50), |acc, instruction| acc.rotate(instruction));
+    let result_part2 = instructions
+        .iter()
+        .fold(Dial::new(50), |acc, instruction| acc.rotate_part2(instruction));
 
-    println!("result: {0}", result.zero_counter);
+    println!("[Part 1] result: {0}", result_part1.zero_counter);
+    println!("[Part 2] result: {0}", result_part2.zero_counter);
 }
 
