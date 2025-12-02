@@ -14,6 +14,7 @@ fn main() {
     let file_content = std::fs::read_to_string(file_path).expect("Failed to read the file");
     let lines = file_content.lines().collect::<Vec<&str>>();
     let instructions = parser::parse(lines);
+    println!("len of instructions: {0}", instructions.len());
 
     let result_part1 = instructions
         .iter()

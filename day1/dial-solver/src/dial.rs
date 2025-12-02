@@ -41,7 +41,7 @@ impl Dial {
             ),
             Instruction::L(amount) => (
                 Dial::rotate_left(self.position, *amount),
-                (amount / 100) + <bool as Into<u16>>::into(amount > &self.position)
+                (amount / 100) + <bool as Into<u16>>::into(self.position != 0 && amount.rem_euclid(100) >= self.position)
             )
         };
         Dial {
@@ -202,12 +202,12 @@ mod tests {
     #[test]
     fn rotate_part2_left_gt100_1() {
         let dial = Dial {
-            position: 88,
-            zero_counter: 6
+            position: 90,
+            zero_counter: 0
         };
         let instruction = Instruction::L(290);
-        let expected_position = 98;
-        let expected_zero_counter = 9;
+        let expected_position = 0;
+        let expected_zero_counter = 3;
 
         let result = dial.rotate_part2(&instruction);
 
@@ -218,12 +218,44 @@ mod tests {
     #[test]
     fn rotate_part2_right_gt100_1() {
         let dial = Dial {
-            position: 88,
-            zero_counter: 6
+            position: 90,
+            zero_counter: 0
         };
         let instruction = Instruction::R(290);
-        let expected_position = 78;
-        let expected_zero_counter = 9;
+        let expected_position = 80;
+        let expected_zero_counter = 3;
+
+        let result = dial.rotate_part2(&instruction);
+
+        assert_eq!(expected_position, result.position);
+        assert_eq!(expected_zero_counter, result.zero_counter);
+    }
+
+    #[test]
+    fn rotate_part2_right_gt100_2() {
+        let dial = Dial {
+            position: 90,
+            zero_counter: 0
+        };
+        let instruction = Instruction::R(210);
+        let expected_position = 0;
+        let expected_zero_counter = 3;
+
+        let result = dial.rotate_part2(&instruction);
+
+        assert_eq!(expected_position, result.position);
+        assert_eq!(expected_zero_counter, result.zero_counter);
+    }
+
+    #[test]
+    fn rotate_part2_right_gt100_3() {
+        let dial = Dial {
+            position: 90,
+            zero_counter: 0
+        };
+        let instruction = Instruction::R(209);
+        let expected_position = 99;
+        let expected_zero_counter = 2;
 
         let result = dial.rotate_part2(&instruction);
 
@@ -248,6 +280,38 @@ mod tests {
     }
 
     #[test]
+    fn rotate_part2_right_2() {
+        let dial = Dial {
+            position: 88,
+            zero_counter: 0
+        };
+        let instruction = Instruction::R(12);
+        let expected_position = 0;
+        let expected_zero_counter = 1;
+
+        let result = dial.rotate_part2(&instruction);
+
+        assert_eq!(expected_position, result.position);
+        assert_eq!(expected_zero_counter, result.zero_counter);
+    }
+
+    #[test]
+    fn rotate_part2_right_3() {
+        let dial = Dial {
+            position: 88,
+            zero_counter: 0
+        };
+        let instruction = Instruction::R(11);
+        let expected_position = 99;
+        let expected_zero_counter = 0;
+
+        let result = dial.rotate_part2(&instruction);
+
+        assert_eq!(expected_position, result.position);
+        assert_eq!(expected_zero_counter, result.zero_counter);
+    }
+
+    #[test]
     fn rotate_part2_left_1() {
         let dial = Dial {
             position: 88,
@@ -256,6 +320,54 @@ mod tests {
         let instruction = Instruction::L(89);
         let expected_position = 99;
         let expected_zero_counter = 7;
+
+        let result = dial.rotate_part2(&instruction);
+
+        assert_eq!(expected_position, result.position);
+        assert_eq!(expected_zero_counter, result.zero_counter);
+    }
+
+    #[test]
+    fn rotate_part2_left_2() {
+        let dial = Dial {
+            position: 90,
+            zero_counter: 0
+        };
+        let instruction = Instruction::L(90);
+        let expected_position = 0;
+        let expected_zero_counter = 1;
+
+        let result = dial.rotate_part2(&instruction);
+
+        assert_eq!(expected_position, result.position);
+        assert_eq!(expected_zero_counter, result.zero_counter);
+    }
+
+    #[test]
+    fn rotate_part2_left_3() {
+        let dial = Dial {
+            position: 90,
+            zero_counter: 0
+        };
+        let instruction = Instruction::L(89);
+        let expected_position = 1;
+        let expected_zero_counter = 0;
+
+        let result = dial.rotate_part2(&instruction);
+
+        assert_eq!(expected_position, result.position);
+        assert_eq!(expected_zero_counter, result.zero_counter);
+    }
+
+    #[test]
+    fn rotate_part2_left_4() {
+        let dial = Dial {
+            position: 0,
+            zero_counter: 0
+        };
+        let instruction = Instruction::L(99);
+        let expected_position = 1;
+        let expected_zero_counter = 0;
 
         let result = dial.rotate_part2(&instruction);
 
