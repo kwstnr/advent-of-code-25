@@ -1,7 +1,7 @@
 #[derive(PartialEq, Debug)]
 pub struct Range {
-    lower_bound: u64,
-    upper_bound: u64
+    pub lower_bound: u64,
+    pub upper_bound: u64
 }
 
 pub fn parse(text: &str) -> Vec<Range> {

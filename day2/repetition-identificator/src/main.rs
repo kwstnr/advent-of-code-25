@@ -12,6 +12,8 @@ fn main() {
     let file_path = &args[1];
     let file_content = std::fs::read_to_string(file_path).expect("Failed to read the file");
 
-    let ranges = parser::parse(&file_content);
+    let ranges = parser::parse(&file_content)
+        .into_iter()
+        .map(|range| range.preprocess());
 }
 
