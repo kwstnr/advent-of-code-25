@@ -65,7 +65,7 @@ mod tests {
         let expected_position = 0;
         let expected_zero_counter = 1;
 
-        let result = dial.rotate(instruction.clone());
+        let result = dial.rotate(&instruction);
 
         assert_eq!(expected_position, result.position);
         assert_eq!(expected_zero_counter, result.zero_counter);
@@ -81,7 +81,7 @@ mod tests {
         let expected_position = 99;
         let expected_zero_counter = 0;
 
-        let result = dial.rotate(instruction.clone());
+        let result = dial.rotate(&instruction);
 
         assert_eq!(expected_position, result.position);
         assert_eq!(expected_zero_counter, result.zero_counter);
@@ -97,7 +97,7 @@ mod tests {
         let expected_position = 40;
         let expected_zero_counter = 0;
 
-        let result = dial.rotate(instruction.clone());
+        let result = dial.rotate(&instruction);
 
         assert_eq!(expected_position, result.position);
         assert_eq!(expected_zero_counter, result.zero_counter);
@@ -113,7 +113,7 @@ mod tests {
         let expected_position = 0;
         let expected_zero_counter = 7;
 
-        let result = dial.rotate(instruction.clone());
+        let result = dial.rotate(&instruction);
 
         assert_eq!(expected_position, result.position);
         assert_eq!(expected_zero_counter, result.zero_counter);
@@ -129,7 +129,7 @@ mod tests {
         let expected_position = 1;
         let expected_zero_counter = 0;
 
-        let result = dial.rotate(instruction.clone());
+        let result = dial.rotate(&instruction);
 
         assert_eq!(expected_position, result.position);
         assert_eq!(expected_zero_counter, result.zero_counter);
@@ -145,7 +145,7 @@ mod tests {
         let expected_position = 99;
         let expected_zero_counter = 0;
 
-        let result = dial.rotate(instruction.clone());
+        let result = dial.rotate(&instruction);
 
         assert_eq!(expected_position, result.position);
         assert_eq!(expected_zero_counter, result.zero_counter);
@@ -161,7 +161,7 @@ mod tests {
         let expected_position = 0;
         let expected_zero_counter = 7;
 
-        let result = dial.rotate(instruction.clone());
+        let result = dial.rotate(&instruction);
 
         assert_eq!(expected_position, result.position);
         assert_eq!(expected_zero_counter, result.zero_counter);
@@ -177,7 +177,7 @@ mod tests {
         let expected_position = 0;
         let expected_zero_counter = 7;
 
-        let result = dial.rotate(instruction.clone());
+        let result = dial.rotate(&instruction);
 
         assert_eq!(expected_position, result.position);
         assert_eq!(expected_zero_counter, result.zero_counter);
@@ -193,35 +193,73 @@ mod tests {
         let expected_position = 90;
         let expected_zero_counter = 6;
 
-        let result = dial.rotate(instruction.clone());
+        let result = dial.rotate(&instruction);
 
         assert_eq!(expected_position, result.position);
         assert_eq!(expected_zero_counter, result.zero_counter);
     }
 
-    //#[test]
-    //fn zero_counter_increase() {
-    //    let mut n = 0;
-    //    while n < 100 {
-    //        let random_position: u16 = rand::thread_rng().gen();
-    //        let random_amount: u16 = rand::thread_rng().gen();
-    //        let left_or_right = rand::thread_rng().gen_range(0..1);
-    //        let instruction = {
-    //            if (let_or_right == 0) {
-    //                Instruction::L(random_amount)
-    //            } else {
-    //                Instruction::R(random_amount)
-    //            }
-    //        }
+    #[test]
+    fn rotate_part2_left_gt100_1() {
+        let dial = Dial {
+            position: 88,
+            zero_counter: 6
+        };
+        let instruction = Instruction::L(290);
+        let expected_position = 98;
+        let expected_zero_counter = 9;
 
-    //        let should_increase_zero_counter = {
-    //            match instruction {
-    //                Instruction::L(_) => random_position - (random_amount % 100) == 0,
-    //                Instruction::R(_) => (random_position + random_amount) % 100 == 0
-    //            }
-    //        };
-    //        n = n + 1;
-    //    }
+        let result = dial.rotate_part2(&instruction);
 
-    //}
+        assert_eq!(expected_position, result.position);
+        assert_eq!(expected_zero_counter, result.zero_counter);
+    }
+
+    #[test]
+    fn rotate_part2_right_gt100_1() {
+        let dial = Dial {
+            position: 88,
+            zero_counter: 6
+        };
+        let instruction = Instruction::R(290);
+        let expected_position = 78;
+        let expected_zero_counter = 9;
+
+        let result = dial.rotate_part2(&instruction);
+
+        assert_eq!(expected_position, result.position);
+        assert_eq!(expected_zero_counter, result.zero_counter);
+    }
+
+    #[test]
+    fn rotate_part2_right_1() {
+        let dial = Dial {
+            position: 88,
+            zero_counter: 6
+        };
+        let instruction = Instruction::R(20);
+        let expected_position = 8;
+        let expected_zero_counter = 7;
+
+        let result = dial.rotate_part2(&instruction);
+
+        assert_eq!(expected_position, result.position);
+        assert_eq!(expected_zero_counter, result.zero_counter);
+    }
+
+    #[test]
+    fn rotate_part2_left_1() {
+        let dial = Dial {
+            position: 88,
+            zero_counter: 6
+        };
+        let instruction = Instruction::L(89);
+        let expected_position = 99;
+        let expected_zero_counter = 7;
+
+        let result = dial.rotate_part2(&instruction);
+
+        assert_eq!(expected_position, result.position);
+        assert_eq!(expected_zero_counter, result.zero_counter);
+    }
 }
