@@ -15,36 +15,47 @@ impl Range {
 
         // TODO: refactor into functional pipe
         let mut results: Vec<u64> = vec![];
-        // TODO: add check for not 0 or length of two digit-lengths
-        if lower_digits[0] < upper_digits[1] {
-            let inner_range = range_first[1..=range_first.len()-2].to_vec();
-            println!("inner_n: {:#?}", inner_range);
 
-            for x in inner_range {
-                let y: u32 = (lower_first_half.len()-1).try_into().unwrap();
-                let base = x*10_u64.pow(y);
+        // TODO: get repetitions for restricted lower bound
+        // TODO: get repetitions for restricted upper bound
 
-                for pow in 0..y {
-                    //0..1 -> 0
-                    for z in 0_u64..=9 {
-                        let repetition_half = base + (z * 10_u64.pow(pow as u32));
-                        let repetition = repetition_half * (10_u64.pow(y+1) + 1);
-                        println!("repetition: {}", repetition);
-                        results.push(repetition);
-                    }
+        // solve for inner range
+        // TODO: move into own function (parameters to be determined)
+        let inner_range = range_first[1..=range_first.len() - 2].to_vec();
+        println!("inner_n: {:#?}", inner_range);
+
+        for x in inner_range {
+            let y: u32 = (lower_first_half.len() - 1).try_into().unwrap();
+            let base = x * 10_u64.pow(y);
+
+            for pow in 0..y {
+                //0..1 -> 0
+                for z in 0_u64..=9 {
+                    let repetition_half = base + (z * 10_u64.pow(pow as u32));
+                    let repetition = repetition_half * (10_u64.pow(y + 1) + 1);
+                    println!("repetition: {}", repetition);
+                    results.push(repetition);
                 }
             }
-            return results;
-            //inner_range
-            //    .iter()
-            //    .flat_map(|x| {
-            //        let y = lower_first_half.len()-1;
-            //        let base = x*10_u64.pow(y);
-            //        (0..y)
-            //            .map()
-            //    });
         }
-        vec![0]
+        results
+    }
+
+    pub fn find_repetition_lower_restriction(lower_first_half: Vec<u64>, upper_first_half: Vec<u64>, n: u64) {
+        // n might be the digit that was determined as restricted in the previous step (just needed to build repetitions actually -> might be removed)
+        // lower_first_half and upper_first_half should have already been shortened by now (first digit removed)
+        // find the lower and upper bound for the restricted next digit (first digit in the array) (the lower bound will always be the digit in lower_first_half at position 0, and the upper 9)
+        // do the same again for the lower_restriction of the next digit with lower_first_half and upper_first_half with removed first item = recursive
+        // do the inner range repetition finder (same as base function above -> should be moved to its own function) -> might have to check with upper function
+    }
+
+    pub fn find_repetition_upper_restriction(lower_first_half: Vec<u64>, upper_first_half: Vec<u64>, n: u64) {
+        // this is the same as lower restriction but kind of mirrored
+        // n is the digit that was determined as restricted in the previous step (just needed to build repetitions actually -> might be removed)
+        // lower_first_half and upper_first_half should have already been shortened by now (first digit removed)
+        // find the lower and upper bound for the restricted next digit (first digit in the array) (the lower will always be 0, and the upper the digit in upper_first_half at position 0)
+        // do the same again for the upper_restriction of the next digit with lower_first_half and upper_first_half with removed first item = recursive
+        // do the inner range repetition finder (same as base function above -> should be moved to its own function) -> might have to check with upper function
     }
 }
 
@@ -53,7 +64,7 @@ fn vector_of_digits(n: u64) -> Vec<u64> {
     let nod = n.checked_ilog10().unwrap_or(0) + 1;
     (1..=nod)
         .rev()
-        .map(|x| n.rem_euclid(10_u64.pow(x)) / 10_u64.pow(x-1))
+        .map(|x| n.rem_euclid(10_u64.pow(x)) / 10_u64.pow(x - 1))
         .collect()
 }
 
@@ -107,35 +118,14 @@ mod test {
     }
 
     #[test]
-    fn find_repetitions_11_22() {
+    fn find_repetitions_1111_2222() {
         let input = Range {
             lower_bound: 1111,
-            upper_bound: 3333
+            upper_bound: 3333,
         };
         let expected = vec![
-            1111,
-            1212,
-            1313,
-            1414,
-            1515,
-            1616,
-            1717,
-            1818,
-            1919,
-            2020,
-            2121,
-            2222,
-            2323,
-            2424,
-            2525,
-            2626,
-            2727,
-            2828,
-            2929,
-            3030,
-            3131,
-            3232,
-            3333
+            1111, 1212, 1313, 1414, 1515, 1616, 1717, 1818, 1919, 2020, 2121, 2222, 2323, 2424,
+            2525, 2626, 2727, 2828, 2929, 3030, 3131, 3232, 3333,
         ];
 
         let result = input.find_repetitions();
