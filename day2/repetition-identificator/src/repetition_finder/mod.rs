@@ -3,6 +3,48 @@ mod tests;
 
 use crate::parser::Range;
 
+enum Restriction {
+    LOWER(Vec<u64>),
+    UPPER(Vec<u64>)
+}
+
+impl Restriction {
+    fn len(&self) -> usize {
+        match self {
+            Restriction::LOWER(v) => v.len(),
+            Restriction::UPPER(v) => v.len(),
+        }
+    }
+
+    fn first_digit_range(&self) -> Vec<u64> {
+        match self {
+            Restriction::LOWER(v) => (v[0]..=9).collect::<Vec<u64>>(),
+            Restriction::UPPER(v) => (0..=v[0]).collect::<Vec<u64>>(),
+        }
+    }
+
+    fn vector(&self) -> &Vec<u64> {
+        match self {
+            Restriction::LOWER(v) => v,
+            Restriction::UPPER(v) => v,
+        }
+    }
+
+    fn restricted_index(&self, first_digit_range: &Vec<u64>) -> usize {
+        match self {
+            Restriction::LOWER(_) => 0,
+            Restriction::UPPER(_) => first_digit_range.len() - 1,
+        }
+    }
+
+    fn popped(&self) -> Self {
+        match self {
+            Restriction::LOWER(v) => Restriction::LOWER(v[1..].to_owned()),
+            Restriction::UPPER(v) => Restriction::UPPER(v[1..].to_owned()),
+        }
+    }
+}
+
 impl Range {
     // expects a preprocessed range
     pub fn find_repetitions(&self) -> Vec<u64> {
@@ -65,53 +107,14 @@ impl Range {
         (0..=9).map(|x| x.to_string()).collect::<Vec<String>>()
     }
 
-    fn find_repetition_lower_restriction_rec_string(lower_first_half: Vec<u64>) -> Vec<String> {
-        if lower_first_half.len() == 0 {
+    fn find_restricted_repetition_rec_string(restriction: Restriction) -> Vec<String> {
+        if restriction.len() == 0 {
             return vec![];
         }
 
-        let first_digit_range = (lower_first_half[0]..=9).collect::<Vec<u64>>();
-        if lower_first_half.len() > 1 {
-            return first_digit_range
-                .into_iter()
-                .enumerate()
-                .map(|(i, possible_digit)| {
-                    (
-                        possible_digit,
-                        if i == 0 {
-                            Range::find_repetition_lower_restriction_rec_string(
-                                lower_first_half[1..].to_owned(),
-                            )
-                        } else {
-                            Range::find_repetition_unrestricted_rec_string(
-                                (lower_first_half.len() - 1).try_into().unwrap(),
-                            )
-                        },
-                    )
-                })
-                .flat_map(|(possible_digit, inner_results)| {
-                    inner_results
-                        .into_iter()
-                        .map(|x| format!("{}{}", possible_digit, x))
-                        .collect::<Vec<String>>()
-                })
-                .collect::<Vec<String>>();
-        }
+        let first_digit_range = restriction.first_digit_range();
 
-        first_digit_range
-            .into_iter()
-            .map(|x| x.to_string())
-            .collect()
-    }
-
-    fn find_repetition_upper_restriction_rec_string(upper_first_half: Vec<u64>) -> Vec<String> {
-        if upper_first_half.len() == 0 {
-            return vec![];
-        }
-
-        let first_digit_range = (0..=upper_first_half[0]).collect::<Vec<u64>>();
-
-        if upper_first_half.len() > 1 {
+        if restriction.len() > 1 {
             return first_digit_range
                 .clone()
                 .into_iter()
@@ -119,13 +122,13 @@ impl Range {
                 .map(|(i, possible_digit)| {
                     (
                         possible_digit,
-                        if i == first_digit_range.len() - 1 {
-                            Range::find_repetition_upper_restriction_rec_string(
-                                upper_first_half[1..].to_owned(),
+                        if i == restriction.restricted_index(&first_digit_range) {
+                            Range::find_restricted_repetition_rec_string(
+                                restriction.popped(),
                             )
                         } else {
                             Range::find_repetition_unrestricted_rec_string(
-                                (upper_first_half.len() - 1).try_into().unwrap(),
+                                (restriction.len() - 1).try_into().unwrap(),
                             )
                         },
                     )
@@ -136,7 +139,7 @@ impl Range {
                         .map(|x| format!("{}{}", possible_digit, x))
                         .collect::<Vec<String>>()
                 })
-                .collect::<Vec<String>>();
+                .collect()
         }
 
         first_digit_range
@@ -156,6 +159,6 @@ fn vector_of_digits(n: u64) -> Vec<u64> {
 }
 
 fn match_vector_lengths(lower: Vec<u64>, upper: Vec<u64>) -> Vec<u64> {
-    // fill up lower vector with leading zeros to match upper vector length
+    // TODO: fill up lower vector with leading zeros to match upper vector length
     vec![0]
 }
