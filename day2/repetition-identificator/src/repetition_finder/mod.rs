@@ -46,45 +46,33 @@ impl Restriction {
 }
 
 impl Range {
-    // expects a preprocessed range
-    pub fn find_repetitions(&self) -> Vec<u64> {
+    pub fn find_repetitions(&self) -> Vec<String> {
         let lower_digits = vector_of_digits(self.lower_bound);
         let upper_digits = vector_of_digits(self.upper_bound);
-        let (lower_first_half, _) = lower_digits.split_at(lower_digits.len() / 2);
-        let (upper_first_half, _) = upper_digits.split_at(upper_digits.len() / 2);
-        println!("lower: {:#?}", lower_first_half);
-        println!("upper: {:#?}", upper_first_half);
+        let (lower_half, _) = lower_digits.split_at(lower_digits.len() / 2);
+        let (upper_half, _) = upper_digits.split_at(upper_digits.len() / 2);
 
-        let range_first = (lower_first_half[0]..=upper_first_half[0]).collect::<Vec<u64>>();
-        println!("range_first {:#?}", range_first);
+        let mut results: Vec<String> = vec![];
 
-        // TODO: refactor into functional pipe
-        let mut results: Vec<u64> = vec![];
+        let range_first_digit = (lower_half[0]..=upper_half[0]).collect::<Vec<u64>>();
 
-        // TODO: get repetitions for restricted lower bound
-        // TODO: get repetitions for restricted upper bound
-
-        // solve for inner range
-        // TODO: move into own function (parameters to be determined)
-        let inner_range = range_first[1..=range_first.len() - 2].to_vec();
-        println!("inner_n: {:#?}", inner_range);
-
-        for x in inner_range {
-            let y: u32 = (lower_first_half.len() - 1).try_into().unwrap();
-            let base = x * 10_u64.pow(y);
-
-            for pow in 0..y {
-                //starting with the least significant digit <- remember!
-                //0..1 -> 0
-                for z in 0_u64..=9 {
-                    let repetition_half = base + (z * 10_u64.pow(pow));
-                    let repetition = repetition_half * (10_u64.pow(y + 1) + 1);
-                    println!("repetition: {}", repetition);
-                    results.push(repetition);
-                }
-            }
+        for (i, x) in range_first_digit.clone().into_iter().enumerate() {
+            let inner_results = if i == 0 {
+                Range::find_restricted_repetition_rec_string(Restriction::LOWER(lower_half[1..].to_vec()))
+            } else if i == range_first_digit.len() - 1 {
+                Range::find_restricted_repetition_rec_string(Restriction::UPPER(upper_half[1..].to_vec()))
+            } else {
+                Range::find_repetition_unrestricted_rec_string((lower_half.len() - 1).try_into().unwrap())
+            };
+            results.extend(
+                inner_results
+                    .into_iter()
+                    .map(|y| format!("{}{}", x, y))
+                    .collect::<Vec<String>>(),
+            );
         }
-        results
+
+        results.into_iter().map(|x| format!("{}{}", x, x)).collect()
     }
 
     fn find_repetition_unrestricted_rec_string(remaining_half_length: u64) -> Vec<String> {
