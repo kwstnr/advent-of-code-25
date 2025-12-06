@@ -526,3 +526,48 @@ fn find_repetitions_1212_1999() {
 
     assert_eq!(expected, result);
 }
+
+#[test]
+fn find_repetitions_11_3333() {
+    let range = Range {
+        lower_bound: 11,
+        upper_bound: 3333,
+    };
+
+    let mut expected = vec![
+        "11", "22", "33", "44", "55", "66", "77", "88", "99",
+        "1010", "1111", "1212", "1313", "1414", "1515", "1616", "1717", "1818", "1919",
+        "2020", "2121", "2222", "2323", "2424", "2525", "2626", "2727", "2828", "2929",
+        "3030", "3131", "3232", "3333",
+    ];
+    expected.sort();
+
+    let mut result = range.find_repetitions();
+    result.sort();
+
+    assert_eq!(expected, result);
+}
+
+#[test]
+fn match_vector_lengths_1111_3333() {
+    let lower: Vec<u64> = vec![1, 1, 1, 1];
+    let upper: Vec<u64> = vec![3, 3, 3, 3];
+
+    let expected: Vec<u64> = vec![1, 1, 1, 1];
+
+    let result = match_vector_lengths(lower, &upper);
+
+    assert_eq!(expected, result);
+}
+
+#[test]
+fn match_vector_lengths_11_3333() {
+    let lower: Vec<u64> = vec![1, 1];
+    let upper: Vec<u64> = vec![3, 3, 3, 3];
+
+    let expected: Vec<u64> = vec![0, 0, 1, 1];
+
+    let result = match_vector_lengths(lower, &upper);
+
+    assert_eq!(expected, result);
+}
