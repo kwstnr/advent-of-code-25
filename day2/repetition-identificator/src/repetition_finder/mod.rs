@@ -52,27 +52,23 @@ impl Range {
         let (lower_half, _) = lower_digits.split_at(lower_digits.len() / 2);
         let (upper_half, _) = upper_digits.split_at(upper_digits.len() / 2);
 
-        let mut results: Vec<String> = vec![];
-
-        let range_first_digit = (lower_half[0]..=upper_half[0]).collect::<Vec<u64>>();
-
-        for (i, x) in range_first_digit.clone().into_iter().enumerate() {
-            let inner_results = if i == 0 {
-                Range::find_restricted_repetition_rec_string(Restriction::LOWER(lower_half[1..].to_vec()))
-            } else if i == range_first_digit.len() - 1 {
-                Range::find_restricted_repetition_rec_string(Restriction::UPPER(upper_half[1..].to_vec()))
-            } else {
-                Range::find_repetition_unrestricted_rec_string((lower_half.len() - 1).try_into().unwrap())
-            };
-            results.extend(
+        (lower_half[0]..=upper_half[0]).collect::<Vec<u64>>()
+            .clone().into_iter().enumerate()
+            .flat_map(|(i, possible_digit)| {
+                let inner_results = if i == 0 {
+                    Range::find_restricted_repetition_rec_string(Restriction::LOWER(lower_half[1..].to_vec()))
+                } else if i == (upper_half[0] - lower_half[0]) as usize {
+                    Range::find_restricted_repetition_rec_string(Restriction::UPPER(upper_half[1..].to_vec()))
+                } else {
+                    Range::find_repetition_unrestricted_rec_string((lower_half.len() - 1).try_into().unwrap())
+                };
                 inner_results
                     .into_iter()
-                    .map(|y| format!("{}{}", x, y))
-                    .collect::<Vec<String>>(),
-            );
-        }
-
-        results.into_iter().map(|x| format!("{}{}", x, x)).collect()
+                    .map(|inner_result| format!("{}{}", possible_digit, inner_result))
+                    .collect::<Vec<String>>()
+            })
+            .map(|half_repetition| format!("{}{}", half_repetition, half_repetition))
+            .collect()
     }
 
     fn find_repetition_unrestricted_rec_string(remaining_half_length: u64) -> Vec<String> {
