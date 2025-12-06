@@ -47,7 +47,7 @@ impl Range {
 
     fn find_repetition_unrestricted_rec_string(remaining_half_length: u64) -> Vec<String> {
         if remaining_half_length == 0 {
-            return vec![]
+            return vec![];
         }
 
         if remaining_half_length > 1 {
@@ -62,78 +62,46 @@ impl Range {
                 .collect();
         }
 
-        (0..=9)
-            .map(|x| x.to_string())
-            .collect::<Vec<String>>()
+        (0..=9).map(|x| x.to_string()).collect::<Vec<String>>()
     }
 
     fn find_repetition_lower_restriction_rec_string(lower_first_half: Vec<u64>) -> Vec<String> {
-        vec![]
-    }
-
-    pub fn find_repetition_lower_restriction(lower_first_half: Vec<u64>, n: u64) -> Vec<u64> {
-        // n might be the digit that was determined as restricted in the previous step (just needed to build repetitions actually -> might be removed)
-        // lower_first_half and upper_first_half should have already been shortened by now (first digit removed)
-        // find the lower and upper bound for the restricted next digit (first digit in the array) (the lower bound will always be the digit in lower_first_half at position 0, and the upper 9)
-        // do the same again for the lower_restriction of the next digit with lower_first_half and upper_first_half with removed first item = recursive
-        // do the inner range repetition finder (same as base function above -> should be moved to its own function) -> might have to check with upper function
-
-        println!("n: {}", n);
-        println!("lower_first_half: {:#?}", lower_first_half);
-
-        // recursive base case -> just for safety
         if lower_first_half.len() == 0 {
             return vec![];
         }
 
-        let range = (lower_first_half[0]..=9).collect::<Vec<u64>>();
-        println!("range: {:#?}", range);
-        if lower_first_half.len() == 1 {
-            return range
+        let first_digit_range = (lower_first_half[0]..=9).collect::<Vec<u64>>();
+        if lower_first_half.len() > 1 {
+            return first_digit_range
                 .into_iter()
-                .map(|x| {
-                    let repetition_half = n * 10;
-                    let repetition = (repetition_half + x) * 101; // this upwards multiplication (duplication of half) does not work for higher digit counts
-                    println!("repetition base: {}", repetition);
-                    repetition
+                .enumerate()
+                .map(|(i, possible_digit)| {
+                    (
+                        possible_digit,
+                        if i == 0 {
+                            Range::find_repetition_lower_restriction_rec_string(
+                                lower_first_half[1..].to_owned(),
+                            )
+                        } else {
+                            Range::find_repetition_unrestricted_rec_string(
+                                (lower_first_half.len() - 1).try_into().unwrap(),
+                            )
+                        },
+                    )
                 })
-                .collect();
+                .flat_map(|(possible_digit, inner_results)| {
+                    inner_results
+                        .into_iter()
+                        .map(|x| format!("{}{}", possible_digit, x))
+                        .collect::<Vec<String>>()
+                })
+                .collect::<Vec<String>>();
         }
 
-        let mut results: Vec<u64> = vec![];
-
-        // first element
-        let inner_results =
-            Range::find_repetition_lower_restriction(lower_first_half[1..].to_owned(), range[0]);
-        inner_results
+        first_digit_range
             .into_iter()
-            .map(|x| {
-                let repetition_half = x + (n * 10_u64.pow(lower_first_half.len() as u32));
-                let repetition = repetition_half
-                    * (10_u64.pow((lower_first_half.len() + 1).try_into().unwrap()) + 1); // this upwards multiplication (duplication of half) does not work for higher digit counts
-                println!("repetition inner: {}", repetition);
-                repetition
-            })
-            .for_each(|x| results.push(x));
-
-        // rest of elements
-        let amount_of_additional_digits = lower_first_half.len() - 1;
-        let base_of_repetition = n * 10_u64.pow(amount_of_additional_digits as u32);
-        for y in range[1..].into_iter() {
-            for x in 0..amount_of_additional_digits {
-                for z in 0_u64..=9 {
-                    let repetition_half = base_of_repetition + (y * 10_u64.pow(x as u32));
-                    let repetition_half_with_n_added_at_the_beginning =
-                        repetition_half + (n * 10_u64.pow(lower_first_half.len() as u32));
-                    let repetition = repetition_half_with_n_added_at_the_beginning
-                        * (10_u64.pow((lower_first_half.len() + 1).try_into().unwrap()) + 1);
-                    println!("repetition: {}", repetition);
-                    results.push(repetition);
-                }
-            }
-        }
-
-        results
+            .map(|x| x.to_string())
+            .collect()
     }
 
     pub fn find_repetition_upper_restriction(
