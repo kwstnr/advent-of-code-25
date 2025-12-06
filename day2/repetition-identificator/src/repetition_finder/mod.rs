@@ -104,18 +104,45 @@ impl Range {
             .collect()
     }
 
-    pub fn find_repetition_upper_restriction(
-        lower_first_half: Vec<u64>,
-        upper_first_half: Vec<u64>,
-        n: u64,
-    ) -> Vec<u64> {
-        // this is the same as lower restriction but kind of mirrored
-        // n is the digit that was determined as restricted in the previous step (just needed to build repetitions actually -> might be removed)
-        // lower_first_half and upper_first_half should have already been shortened by now (first digit removed)
-        // find the lower and upper bound for the restricted next digit (first digit in the array) (the lower will always be 0, and the upper the digit in upper_first_half at position 0)
-        // do the same again for the upper_restriction of the next digit with lower_first_half and upper_first_half with removed first item = recursive
-        // do the inner range repetition finder (same as base function above -> should be moved to its own function) -> might have to check with upper function
-        vec![]
+    fn find_repetition_upper_restriction_rec_string(upper_first_half: Vec<u64>) -> Vec<String> {
+        if upper_first_half.len() == 0 {
+            return vec![];
+        }
+
+        let first_digit_range = (0..=upper_first_half[0]).collect::<Vec<u64>>();
+
+        if upper_first_half.len() > 1 {
+            return first_digit_range
+                .clone()
+                .into_iter()
+                .enumerate()
+                .map(|(i, possible_digit)| {
+                    (
+                        possible_digit,
+                        if i == first_digit_range.len() - 1 {
+                            Range::find_repetition_upper_restriction_rec_string(
+                                upper_first_half[1..].to_owned(),
+                            )
+                        } else {
+                            Range::find_repetition_unrestricted_rec_string(
+                                (upper_first_half.len() - 1).try_into().unwrap(),
+                            )
+                        },
+                    )
+                })
+                .flat_map(|(possible_digit, inner_results)| {
+                    inner_results
+                        .into_iter()
+                        .map(|x| format!("{}{}", possible_digit, x))
+                        .collect::<Vec<String>>()
+                })
+                .collect::<Vec<String>>();
+        }
+
+        first_digit_range
+            .into_iter()
+            .map(|x| x.to_string())
+            .collect()
     }
 }
 
