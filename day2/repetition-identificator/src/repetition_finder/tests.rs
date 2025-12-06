@@ -571,3 +571,19 @@ fn match_vector_lengths_11_3333() {
 
     assert_eq!(expected, result);
 }
+
+#[test]
+fn find_repetitions_1000_1012() {
+    let range = Range {
+        lower_bound: 1000,
+        upper_bound: 1012,
+    };
+
+    let expected = vec![
+        "1010",
+    ];
+
+    let result = range.find_repetitions();
+
+    assert_eq!(expected, result);
+}

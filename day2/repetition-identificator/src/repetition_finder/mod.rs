@@ -68,7 +68,6 @@ impl Range {
             .flat_map(|r| r.find_repetitions())
             .collect::<Vec<String>>();
 
-
         let (lower_half, _) = lower_digits.split_at(lower_digits.len() / 2);
         let (upper_half, _) = upper_digits.split_at(upper_digits.len() / 2);
 
@@ -92,9 +91,13 @@ impl Range {
                 .into_iter()
                 .enumerate()
                 .flat_map(|(i, possible_digit)| {
-                    let inner_results = if i == 0 {
+                    let inner_results = if i == 0 && possible_digit != upper_half[0] {
                         Range::find_restricted_repetition_rec_string(Restriction::LOWER(
                             lower_half[1..].to_vec(),
+                        ))
+                    } else if i == 0 && possible_digit == upper_half[0] {
+                        Range::find_restricted_repetition_rec_string(Restriction::UPPER(
+                            upper_half[1..].to_vec(),
                         ))
                     } else if i == (upper_half[0] - lower_half[0]) as usize {
                         Range::find_restricted_repetition_rec_string(Restriction::UPPER(
