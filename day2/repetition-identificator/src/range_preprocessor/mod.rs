@@ -15,8 +15,8 @@ impl Range {
             return n
         }
         match bound {
-            Bound::UPPER => n / 10,
-            Bound::LOWER => n * 10
+            Bound::UPPER => 10u64.pow(number_of_digits - 1) - 1,
+            Bound::LOWER => 10u64.pow(number_of_digits),
         }
     }
 
@@ -25,5 +25,9 @@ impl Range {
             lower_bound: Range::preprocess_bound(self.lower_bound, Bound::LOWER),
             upper_bound: Range::preprocess_bound(self.upper_bound, Bound::UPPER),
         }
+    }
+
+    pub fn is_valid(&self) -> bool {
+        self.lower_bound <= self.upper_bound
     }
 }
