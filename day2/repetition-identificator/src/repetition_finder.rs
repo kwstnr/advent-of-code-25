@@ -47,21 +47,21 @@ impl Range {
             return vec![]
         }
 
-        let mut results = (0..=9).map(|n| n.to_string()).collect::<Vec<String>>();
-
         if remaining_half_length > 1 {
-            let rec = Range::find_repetition_unrestricted_rec_string(remaining_half_length - 1);
-            let mut inner_results: Vec<String> = vec![];
-            for inner_result in &results {
-                for x in &rec {
-                    let combined = format!("{}{}", inner_result, x);
-                    inner_results.push(combined);
-                }
-            }
-            return inner_results;
+            return Range::find_repetition_unrestricted_rec_string(remaining_half_length - 1)
+                .into_iter()
+                .flat_map(|x| {
+                    (0..=9)
+                        .map(|possible_digit| possible_digit.to_string())
+                        .map(|y| format!("{}{}", y, x))
+                        .collect::<Vec<String>>()
+                })
+                .collect();
         }
 
-        results
+        (0..=9)
+            .map(|x| x.to_string())
+            .collect::<Vec<String>>()
     }
 
     pub fn find_repetition_lower_restriction(lower_first_half: Vec<u64>, n: u64) -> Vec<u64> {
@@ -203,7 +203,7 @@ mod test {
     }
 
     #[test]
-    fn find_repetitions_full_ham_rec_string_1111_3333() {
+    fn find_repetitions_unrestricted_rec_string_1111_3333() {
         let remaining_half_length = 1;
 
         let expected = vec![
@@ -216,7 +216,7 @@ mod test {
     }
 
     #[test]
-    fn find_repetitions_full_ham_rec_string_111111_333333() {
+    fn find_repetitions_unrestricted_rec_string_111111_333333() {
         let remaining_half_length = 2;
 
         let expected = vec![
@@ -230,17 +230,16 @@ mod test {
             "70", "71", "72", "73", "74", "75", "76", "77", "78", "79",
             "80", "81", "82", "83", "84", "85", "86", "87", "88", "89",
             "90", "91", "92", "93", "94", "95", "96", "97", "98", "99",
-        ];
+        ].sort();
 
-        let result = Range::find_repetition_unrestricted_rec_string(remaining_half_length);
+        let result = Range::find_repetition_unrestricted_rec_string(remaining_half_length).sort();
 
         assert_eq!(expected, result);
     }
 
     #[test]
-    fn find_repetitions_full_ham_rec_string_11111111_33333333() {
+    fn find_repetitions_unrestricted_rec_string_11111111_33333333() {
         let remaining_half_length = 3;
-        let n = 2;
 
         let expected = vec![
             "000", "001", "002", "003", "004", "005", "006", "007", "008", "009",
@@ -343,9 +342,9 @@ mod test {
             "970", "971", "972", "973", "974", "975", "976", "977", "978", "979",
             "980", "981", "982", "983", "984", "985", "986", "987", "988", "989",
             "990", "991", "992", "993", "994", "995", "996", "997", "998", "999",
-        ];
+        ].sort();
 
-        let result = Range::find_repetition_unrestricted_rec_string(remaining_half_length);
+        let result = Range::find_repetition_unrestricted_rec_string(remaining_half_length).sort();
 
         assert_eq!(expected, result);
     }
