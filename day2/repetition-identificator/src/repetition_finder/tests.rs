@@ -587,3 +587,19 @@ fn find_repetitions_1000_1012() {
 
     assert_eq!(expected, result);
 }
+
+#[test]
+fn find_repetitions_1188511880_1188511890() {
+    let range = Range {
+        lower_bound: 1188511880,
+        upper_bound: 1188511890,
+    };
+
+    let expected = vec![
+        "1188511885",
+    ];
+
+    let result = range.find_repetitions();
+
+    assert_eq!(expected, result);
+}

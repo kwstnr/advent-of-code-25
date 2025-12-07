@@ -6,6 +6,7 @@ use crate::parser::Range;
 enum Restriction {
     LOWER(Vec<u64>),
     UPPER(Vec<u64>),
+    BOTH(Vec<u64>, Vec<u64>),
 }
 
 impl Restriction {
@@ -13,6 +14,13 @@ impl Restriction {
         match self {
             Restriction::LOWER(v) => v.len(),
             Restriction::UPPER(v) => v.len(),
+            Restriction::BOTH(v1, v2) => {
+                if v1.len() != v2.len() {
+                    panic!("ruh roh")
+                } else {
+                    v1.len()
+                }
+            }
         }
     }
 
@@ -20,13 +28,7 @@ impl Restriction {
         match self {
             Restriction::LOWER(v) => (v[0]..=9).collect::<Vec<u64>>(),
             Restriction::UPPER(v) => (0..=v[0]).collect::<Vec<u64>>(),
-        }
-    }
-
-    fn vector(&self) -> &Vec<u64> {
-        match self {
-            Restriction::LOWER(v) => v,
-            Restriction::UPPER(v) => v,
+            Restriction::BOTH(v1, v2) => (v1[0]..=v2[0]).collect::<Vec<u64>>(),
         }
     }
 
@@ -34,6 +36,7 @@ impl Restriction {
         match self {
             Restriction::LOWER(_) => 0,
             Restriction::UPPER(_) => first_digit_range.len() - 1,
+            Restriction::BOTH(v1, _) => panic!("ruh roh"),
         }
     }
 
@@ -41,6 +44,7 @@ impl Restriction {
         match self {
             Restriction::LOWER(v) => Restriction::LOWER(v[1..].to_owned()),
             Restriction::UPPER(v) => Restriction::UPPER(v[1..].to_owned()),
+            Restriction::BOTH(v1, v2) => Restriction::BOTH(v1[1..].to_owned(), v2[1..].to_owned()),
         }
     }
 }
@@ -96,7 +100,8 @@ impl Range {
                             lower_half[1..].to_vec(),
                         ))
                     } else if i == 0 && possible_digit == upper_half[0] {
-                        Range::find_restricted_repetition_rec_string(Restriction::UPPER(
+                        Range::find_restricted_repetition_rec_string(Restriction::BOTH(
+                            lower_half[1..].to_vec(),
                             upper_half[1..].to_vec(),
                         ))
                     } else if i == (upper_half[0] - lower_half[0]) as usize {
@@ -159,12 +164,25 @@ impl Range {
                 .map(|(i, possible_digit)| {
                     (
                         possible_digit,
-                        if i == restriction.restricted_index(&first_digit_range) {
-                            Range::find_restricted_repetition_rec_string(restriction.popped())
-                        } else {
-                            Range::find_repetition_unrestricted_rec_string(
-                                (restriction.len() - 1).try_into().unwrap(),
-                            )
+                        // TODO: add BOTH case where everything needs to be checked!
+                        match &restriction {
+                            Restriction::BOTH(lower, upper) => {
+                                Range::find_restricted_repetition_rec_string(Restriction::BOTH(
+                                    lower[1..].to_owned(),
+                                    upper[1..].to_owned(),
+                                ))
+                            }
+                            _ => {
+                                if i == restriction.restricted_index(&first_digit_range) {
+                                    Range::find_restricted_repetition_rec_string(
+                                        restriction.popped(),
+                                    )
+                                } else {
+                                    Range::find_repetition_unrestricted_rec_string(
+                                        (restriction.len() - 1).try_into().unwrap(),
+                                    )
+                                }
+                            }
                         },
                     )
                 })
