@@ -17,13 +17,7 @@ fn main() {
         .into_iter()
         .map(|range| range.preprocess())
         .filter(|range| range.is_valid())
-        .flat_map(|range| {
-            range
-                .find_repetitions()
-                .into_iter()
-                .map(|rep| rep.parse::<u64>().unwrap())
-                .filter(move |rep| *rep >= range.lower_bound && *rep <= range.upper_bound)
-        })
+        .flat_map(|range| range.find_repetitions())
         .sum();
 
     println!("sum of invalid-id's: {}", sum);
