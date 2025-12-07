@@ -603,3 +603,17 @@ fn find_repetitions_1188511880_1188511890() {
 
     assert_eq!(expected, result);
 }
+
+#[test]
+fn find_repetitions_5655653_565659() {
+    let range = Range {
+        lower_bound: 5655653,
+        upper_bound: 5656599,
+    };
+
+    let expected: Vec<String> = vec![];
+
+    let result = range.find_repetitions();
+
+    assert_eq!(expected, result);
+}
