@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod tests;
 
+use std::collections::HashSet;
 use crate::parser::Range;
 use crate::utils::vector_of_digits;
 
@@ -9,30 +10,25 @@ impl Range {
         let lower_bound_digits = vector_of_digits(self.lower_bound);
         let upper_bound_digits = vector_of_digits(self.upper_bound);
 
-        let split_lengths = self.find_split_lengths();
+        self.find_split_lengths()
+            .into_iter()
+            .flat_map(|split_length| {
+                let amount_of_repetition_replications =
+                    lower_bound_digits.len() / split_length as usize;
 
-        for split_length in split_lengths {
-            // the amount of times the found repetition has to be "duplicated" for it to fill the whole length (111111 -> 11 -> 3)
-            let amount_of_repetition_replications = lower_bound_digits.len() / split_length as usize;
-            println!("any found repetition has to be replicated {} times", amount_of_repetition_replications);
+                let lower_bound_digits = lower_bound_digits[..split_length as usize].to_vec();
+                let upper_bound_digits = upper_bound_digits[..split_length as usize].to_vec();
 
-            let lower_bound_digits = lower_bound_digits[..split_length as usize].to_vec();
-            let upper_bound_digits = upper_bound_digits[..split_length as usize].to_vec();
-            println!("lower_bound_digits (to look at): {:?}", lower_bound_digits);
-            println!("upper_bound_digits (to look at): {:?}", upper_bound_digits);
-
-            let results = Self::find_split_repetitions(&lower_bound_digits, &upper_bound_digits)
-                .into_iter()
-                .map(|result| result.repeat(amount_of_repetition_replications as usize))
-                .map(|result| result.parse::<u64>().unwrap())
-                .filter(|result| self.result_is_valid(*result))
-                .collect::<Vec<u64>>();
-            println!("results: {:?}", results);
-
-            return results;
-        }
-
-        vec![]
+                Self::find_split_repetitions(&lower_bound_digits, &upper_bound_digits)
+                    .into_iter()
+                    .map(|result| result.repeat(amount_of_repetition_replications as usize))
+                    .map(|result| result.parse::<u64>().unwrap())
+                    .filter(|result| self.result_is_valid(*result))
+                    .collect::<Vec<u64>>()
+            })
+            .collect::<HashSet<u64>>()
+            .into_iter()
+            .collect::<Vec<u64>>()
     }
 
     fn result_is_valid(&self, result: u64) -> bool {

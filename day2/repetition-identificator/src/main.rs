@@ -24,7 +24,15 @@ fn main() {
         .sum();
 
     //19574776074
-    println!("sum of invalid-id's: {}", sum);
+    println!("[PART-1] sum of invalid-id's: {}", sum);
 
     // part2
+    let sum: u64 = parser::parse(&file_content)
+        .into_iter()
+        .flat_map(|range| range.preprocess_part2())
+        .flat_map(|range| range.find_repetitions_part2())
+        .sum();
+
+    //25912654282
+    println!("[PART-2] sum of invalid-id's: {}", sum);
 }
