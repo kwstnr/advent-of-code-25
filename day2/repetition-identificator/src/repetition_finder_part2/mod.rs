@@ -35,7 +35,7 @@ impl Range {
         self.lower_bound <= result && self.upper_bound >= result
     }
 
-    fn find_split_repetitions(lower_bound: &Vec<u64>, upper_bound: &Vec<u64>) -> Vec<String> {
+    fn find_split_repetitions(lower_bound: &Vec<u8>, upper_bound: &Vec<u8>) -> Vec<String> {
         let possible_digits = lower_bound[0]..=upper_bound[0];
 
         if lower_bound.len() == 1 {

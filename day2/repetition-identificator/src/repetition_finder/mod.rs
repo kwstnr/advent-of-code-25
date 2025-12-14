@@ -5,9 +5,9 @@ use crate::parser::Range;
 use crate::utils::vector_of_digits;
 
 pub enum Restriction {
-    LOWER(Vec<u64>),
-    UPPER(Vec<u64>),
-    BOTH(Vec<u64>, Vec<u64>),
+    LOWER(Vec<u8>),
+    UPPER(Vec<u8>),
+    BOTH(Vec<u8>, Vec<u8>),
 }
 
 impl Restriction {
@@ -25,15 +25,15 @@ impl Restriction {
         }
     }
 
-    pub fn first_digit_range(&self) -> Vec<u64> {
+    pub fn first_digit_range(&self) -> Vec<u8> {
         match self {
-            Restriction::LOWER(v) => (v[0]..=9).collect::<Vec<u64>>(),
-            Restriction::UPPER(v) => (0..=v[0]).collect::<Vec<u64>>(),
-            Restriction::BOTH(v1, v2) => (v1[0]..=v2[0]).collect::<Vec<u64>>(),
+            Restriction::LOWER(v) => (v[0]..=9).collect::<Vec<u8>>(),
+            Restriction::UPPER(v) => (0..=v[0]).collect::<Vec<u8>>(),
+            Restriction::BOTH(v1, v2) => (v1[0]..=v2[0]).collect::<Vec<u8>>(),
         }
     }
 
-    pub fn restricted_position(&self, first_digit_range: &Vec<u64>) -> usize {
+    pub fn restricted_position(&self, first_digit_range: &Vec<u8>) -> usize {
         match self {
             Restriction::LOWER(_) => 0,
             Restriction::UPPER(_) => first_digit_range.len() - 1,
@@ -55,8 +55,6 @@ impl Range {
         let lower_digits = vector_of_digits(self.lower_bound);
         let upper_digits = vector_of_digits(self.upper_bound);
 
-        let mut additional_results = self.find_uneven_repetitions(&lower_digits, &upper_digits);
-
         let (lower_half, _) = lower_digits.split_at(lower_digits.len() / 2);
         let (upper_half, _) = upper_digits.split_at(upper_digits.len() / 2);
 
@@ -65,19 +63,23 @@ impl Range {
                 .into_iter()
                 .enumerate()
                 .map(|(i, _)| if i == 0 { 1 } else { 0 })
-                .collect::<Vec<u64>>(),
+                .collect::<Vec<u8>>(),
             _ => lower_half.to_vec(),
         };
 
+        if lower_half.len() == 0 {
+            println!("Damn what's happening")
+        }
+
         let possible_digits = lower_half[0]..=upper_half[0];
 
-        let mut results: Vec<u64> = if lower_half.len() == 1 {
+        if lower_half.len() == 1 {
             possible_digits
                 .map(|digit| format!("{}", digit))
                 .collect::<Vec<String>>()
         } else {
             possible_digits
-                .collect::<Vec<u64>>()
+                .collect::<Vec<u8>>()
                 .clone()
                 .into_iter()
                 .enumerate()
@@ -98,18 +100,14 @@ impl Range {
         .map(|half_repetition| format!("{}{}", half_repetition, half_repetition))
         .map(|repetition| repetition.parse::<u64>().unwrap())
         .filter(|repetition| *repetition >= self.lower_bound && *repetition <= self.upper_bound)
-        .collect::<Vec<u64>>();
-
-        results.append(&mut additional_results);
-
-        results
+        .collect::<Vec<u64>>()
     }
 
     pub fn find_repetitions_for_next_characters(
         index_of_possible_digits: usize,
-        current_possible_digit: u64,
-        lower_half: &Vec<u64>,
-        upper_half: &Vec<u64>,
+        current_possible_digit: u8,
+        lower_half: &Vec<u8>,
+        upper_half: &Vec<u8>,
     ) -> Vec<String> {
         if index_of_possible_digits == 0 && current_possible_digit != upper_half[0] {
             Range::find_restricted_repetition_rec_string(Restriction::LOWER(
@@ -129,26 +127,6 @@ impl Range {
                 (lower_half.len() - 1).try_into().unwrap(),
             )
         }
-    }
-
-    fn find_uneven_repetitions(
-        &self,
-        lower_bound_digits: &Vec<u64>,
-        upper_bound_digits: &Vec<u64>,
-    ) -> Vec<u64> {
-        (lower_bound_digits.len()..upper_bound_digits.len())
-            .enumerate()
-            .map(|(i, _)| Range {
-                lower_bound: if i == 0 {
-                    self.lower_bound
-                } else {
-                    10u64.pow((lower_bound_digits.len() + i - 1) as u32)
-                },
-                upper_bound: 10u64.pow((lower_bound_digits.len() + i) as u32) - 1,
-            })
-            .filter(|r| vector_of_digits(r.lower_bound).len().rem_euclid(2) == 0)
-            .flat_map(|r| r.find_repetitions())
-            .collect::<Vec<u64>>()
     }
 
     fn find_repetition_unrestricted_rec_string(remaining_half_length: u64) -> Vec<String> {

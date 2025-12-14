@@ -8,5 +8,6 @@ pub fn vector_of_digits(n: u64) -> Vec<u8> {
     (1..=nod)
         .rev()
         .map(|x| n.rem_euclid(10_u64.pow(x)) / 10_u64.pow(x - 1))
-        .collect()
+        .map(|x| x as u8)
+        .collect::<Vec<u8>>()
 }
