@@ -1,7 +1,8 @@
 #[cfg(test)]
 mod tests;
 
-pub fn vector_of_digits(n: u64) -> Vec<u64> {
+/// Converts a number into a vector of its digits.
+pub fn vector_of_digits(n: u64) -> Vec<u8> {
     // nod = number of digits
     let nod = n.checked_ilog10().unwrap_or(0) + 1;
     (1..=nod)
