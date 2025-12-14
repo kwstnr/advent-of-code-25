@@ -4,14 +4,14 @@ mod tests;
 use crate::parser::Range;
 use crate::utils::vector_of_digits;
 
-enum Restriction {
+pub enum Restriction {
     LOWER(Vec<u64>),
     UPPER(Vec<u64>),
     BOTH(Vec<u64>, Vec<u64>),
 }
 
 impl Restriction {
-    fn len(&self) -> usize {
+    pub fn len(&self) -> usize {
         match self {
             Restriction::LOWER(v) => v.len(),
             Restriction::UPPER(v) => v.len(),
@@ -25,7 +25,7 @@ impl Restriction {
         }
     }
 
-    fn first_digit_range(&self) -> Vec<u64> {
+    pub fn first_digit_range(&self) -> Vec<u64> {
         match self {
             Restriction::LOWER(v) => (v[0]..=9).collect::<Vec<u64>>(),
             Restriction::UPPER(v) => (0..=v[0]).collect::<Vec<u64>>(),
@@ -33,7 +33,7 @@ impl Restriction {
         }
     }
 
-    fn restricted_position(&self, first_digit_range: &Vec<u64>) -> usize {
+    pub fn restricted_position(&self, first_digit_range: &Vec<u64>) -> usize {
         match self {
             Restriction::LOWER(_) => 0,
             Restriction::UPPER(_) => first_digit_range.len() - 1,
@@ -41,7 +41,7 @@ impl Restriction {
         }
     }
 
-    fn popped(&self) -> Self {
+    pub fn popped(&self) -> Self {
         match self {
             Restriction::LOWER(v) => Restriction::LOWER(v[1..].to_owned()),
             Restriction::UPPER(v) => Restriction::UPPER(v[1..].to_owned()),
@@ -105,7 +105,7 @@ impl Range {
         results
     }
 
-    fn find_repetitions_for_next_characters(
+    pub fn find_repetitions_for_next_characters(
         index_of_possible_digits: usize,
         current_possible_digit: u64,
         lower_half: &Vec<u64>,
