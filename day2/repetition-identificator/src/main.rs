@@ -3,6 +3,8 @@ use std::env;
 mod parser;
 mod range_preprocessor;
 mod repetition_finder;
+mod repetition_finder_part2;
+mod utils;
 
 fn main() {
     let args: Vec<String> = env::args().collect();

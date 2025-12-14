@@ -2,6 +2,7 @@
 mod tests;
 
 use crate::parser::Range;
+use crate::utils::vector_of_digits;
 
 enum Restriction {
     LOWER(Vec<u64>),
@@ -50,23 +51,6 @@ impl Restriction {
 }
 
 impl Range {
-    pub fn find_repetitions_part2(&self) -> Vec<u64> {
-        vec![]
-    }
-
-    fn find_split_length(&self) -> Vec<u8> {
-        let lower_bound_digits = vector_of_digits(self.lower_bound);
-        let lower_bound_digits_length = lower_bound_digits.len();
-        let half_length = lower_bound_digits_length / 2;
-
-        (1..=half_length)
-            .filter(|digit_count| {
-                lower_bound_digits_length.rem_euclid(*digit_count) == 0
-            })
-            .map(|digit_count| digit_count as u8)
-            .collect::<Vec<u8>>()
-    }
-
     pub fn find_repetitions(&self) -> Vec<u64> {
         let lower_digits = vector_of_digits(self.lower_bound);
         let upper_digits = vector_of_digits(self.upper_bound);
@@ -252,22 +236,4 @@ impl Range {
             .map(|x| x.to_string())
             .collect()
     }
-}
-
-fn vector_of_digits(n: u64) -> Vec<u64> {
-    // nod = number of digits
-    let nod = n.checked_ilog10().unwrap_or(0) + 1;
-    (1..=nod)
-        .rev()
-        .map(|x| n.rem_euclid(10_u64.pow(x)) / 10_u64.pow(x - 1))
-        .collect()
-}
-
-fn match_vector_lengths(lower: Vec<u64>, upper: &Vec<u64>) -> Vec<u64> {
-    if lower.len() < upper.len() {
-        let mut new_lower = vec![0; upper.len() - lower.len()];
-        new_lower.extend(lower);
-        return new_lower;
-    }
-    lower
 }

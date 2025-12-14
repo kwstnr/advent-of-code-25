@@ -1,46 +1,6 @@
 use super::*;
 
 #[test]
-fn vector_of_digits_0() {
-    let input = 0;
-    let expected = vec![0];
-
-    let result = vector_of_digits(input);
-
-    assert_eq!(expected, result);
-}
-
-#[test]
-fn vector_of_digits_5() {
-    let input = 5;
-    let expected = vec![5];
-
-    let result = vector_of_digits(input);
-
-    assert_eq!(expected, result);
-}
-
-#[test]
-fn vector_of_digits_10() {
-    let input = 10;
-    let expected = vec![1, 0];
-
-    let result = vector_of_digits(input);
-
-    assert_eq!(expected, result);
-}
-
-#[test]
-fn vector_of_digits_12360() {
-    let input = 12360;
-    let expected = vec![1, 2, 3, 6, 0];
-
-    let result = vector_of_digits(input);
-
-    assert_eq!(expected, result);
-}
-
-#[test]
 fn find_repetitions_unrestricted_rec_string_1111_3333() {
     let remaining_half_length = 1;
 
@@ -549,30 +509,6 @@ fn find_repetitions_11_3333() {
 }
 
 #[test]
-fn match_vector_lengths_1111_3333() {
-    let lower: Vec<u64> = vec![1, 1, 1, 1];
-    let upper: Vec<u64> = vec![3, 3, 3, 3];
-
-    let expected: Vec<u64> = vec![1, 1, 1, 1];
-
-    let result = match_vector_lengths(lower, &upper);
-
-    assert_eq!(expected, result);
-}
-
-#[test]
-fn match_vector_lengths_11_3333() {
-    let lower: Vec<u64> = vec![1, 1];
-    let upper: Vec<u64> = vec![3, 3, 3, 3];
-
-    let expected: Vec<u64> = vec![0, 0, 1, 1];
-
-    let result = match_vector_lengths(lower, &upper);
-
-    assert_eq!(expected, result);
-}
-
-#[test]
 fn find_repetitions_1000_1012() {
     let range = Range {
         lower_bound: 1000,
@@ -614,89 +550,6 @@ fn find_repetitions_5655653_565659() {
     let expected: Vec<u64> = vec![];
 
     let result = range.find_repetitions();
-
-    assert_eq!(expected, result);
-}
-
-#[test]
-fn find_split_length_11() {
-let range = Range {
-    lower_bound: 11,
-    upper_bound: 99,
-};
-
-let expected: Vec<u8> = vec![1];
-
-let result = range.find_split_length();
-
-assert_eq!(expected, result);
-}
-#[test]
-fn find_split_length_111() {
-    let range = Range {
-        lower_bound: 111,
-        upper_bound: 999,
-    };
-
-    let expected: Vec<u8> = vec![1];
-
-    let result = range.find_split_length();
-
-    assert_eq!(expected, result);
-}
-
-#[test]
-fn find_split_length_1111() {
-    let range = Range {
-        lower_bound: 1111,
-        upper_bound: 9999,
-    };
-
-    let expected: Vec<u8> = vec![1, 2];
-
-    let result = range.find_split_length();
-
-    assert_eq!(expected, result);
-}
-
-#[test]
-fn find_split_length_11111() {
-    let range = Range {
-        lower_bound: 11111,
-        upper_bound: 99999,
-    };
-
-    let expected: Vec<u8> = vec![1];
-
-    let result = range.find_split_length();
-
-    assert_eq!(expected, result);
-}
-
-#[test]
-fn find_split_length_111111() {
-    let range = Range {
-        lower_bound: 111111,
-        upper_bound: 999991,
-    };
-
-    let expected: Vec<u8> = vec![1, 2, 3];
-
-    let result = range.find_split_length();
-
-    assert_eq!(expected, result);
-}
-
-#[test]
-fn find_split_length_111111111() {
-    let range = Range {
-        lower_bound: 111111111,
-        upper_bound: 999999999,
-    };
-
-    let expected: Vec<u8> = vec![1, 3];
-
-    let result = range.find_split_length();
 
     assert_eq!(expected, result);
 }
