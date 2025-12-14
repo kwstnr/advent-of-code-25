@@ -37,7 +37,7 @@ impl Restriction {
         match self {
             Restriction::LOWER(_) => 0,
             Restriction::UPPER(_) => first_digit_range.len() - 1,
-            Restriction::BOTH(v1, _) => panic!("ruh roh"),
+            Restriction::BOTH(_, _) => panic!("ruh roh"),
         }
     }
 

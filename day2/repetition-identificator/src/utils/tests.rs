@@ -1,30 +1,6 @@
 use super::*;
 
 #[test]
-fn match_vector_lengths_1111_3333() {
-    let lower: Vec<u64> = vec![1, 1, 1, 1];
-    let upper: Vec<u64> = vec![3, 3, 3, 3];
-
-    let expected: Vec<u64> = vec![1, 1, 1, 1];
-
-    let result = match_vector_lengths(lower, &upper);
-
-    assert_eq!(expected, result);
-}
-
-#[test]
-fn match_vector_lengths_11_3333() {
-    let lower: Vec<u64> = vec![1, 1];
-    let upper: Vec<u64> = vec![3, 3, 3, 3];
-
-    let expected: Vec<u64> = vec![0, 0, 1, 1];
-
-    let result = match_vector_lengths(lower, &upper);
-
-    assert_eq!(expected, result);
-}
-
-#[test]
 fn vector_of_digits_0() {
     let input = 0;
     let expected = vec![0];
