@@ -123,3 +123,20 @@ fn find_repetitions_part2_111111111_222222222() {
 
     assert_eq!(expected, result);
 }
+
+#[test]
+fn find_repetitions_part2_e2e_998_1012() {
+    let range = Range {
+        lower_bound: 998,
+        upper_bound: 1012,
+    };
+
+    // TODO: not correct repetitions
+    let expected: Vec<u64> = vec![999, 1010];
+    let result = range.preprocess_part2()
+        .into_iter()
+        .flat_map(|range| range.find_repetitions_part2())
+        .collect::<Vec<u64>>();
+
+    assert_eq!(expected, result);
+}
