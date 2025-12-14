@@ -1,10 +1,5 @@
 use std::env;
-
-mod parser;
-mod range_preprocessor;
-mod repetition_finder;
-mod repetition_finder_part2;
-mod utils;
+use repetition_identificator::{solve_part1, solve_part2};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -15,24 +10,9 @@ fn main() {
     let file_path = &args[1];
     let file_content = std::fs::read_to_string(file_path).expect("Failed to read the file");
 
-    // part 1
-    let sum: u64 = parser::parse(&file_content)
-        .into_iter()
-        .map(|range| range.preprocess())
-        .filter(|range| range.is_valid())
-        .flat_map(|range| range.find_repetitions())
-        .sum();
-
     //19574776074
-    println!("[PART-1] sum of invalid-id's: {}", sum);
-
-    // part2
-    let sum: u64 = parser::parse(&file_content)
-        .into_iter()
-        .flat_map(|range| range.preprocess_part2())
-        .flat_map(|range| range.find_repetitions_part2())
-        .sum();
+    println!("[PART-1] sum of invalid-id's: {}", solve_part1(&file_content));
 
     //25912654282
-    println!("[PART-2] sum of invalid-id's: {}", sum);
+    println!("[PART-2] sum of invalid-id's: {}", solve_part2(&file_content));
 }
