@@ -2,34 +2,50 @@
 mod tests;
 
 use crate::parser::Range;
+use crate::utils;
 
-enum Bound {
-    UPPER,
-    LOWER
-}
-
+/// Functions for preprocessing ranges
 impl Range {
-    fn preprocess_bound(n: u64, bound: Bound) -> u64 {
-        let number_of_digits = n.checked_ilog10().unwrap_or(0) + 1;
-        if number_of_digits.rem_euclid(2) == 0 {
-            return n
-        }
-        match bound {
-            Bound::UPPER => 10u64.pow(number_of_digits - 1) - 1,
-            Bound::LOWER => 10u64.pow(number_of_digits),
+    /// Normalize the range to have both bounds with even number of digits.
+    /// Takes ownership of self and returns a Result of a new Range.
+    /// If both bounds already have even number of digits, returns self.
+    /// if the resulting bounds no longer overlap, returns an Err with a message.
+    pub fn normalize_uneven(self) -> Result<Self, String> {
+        // lower bound
+        let number_of_digits = self.lower_bound.checked_ilog10().unwrap_or(0) + 1;
+        let new_lower_bound = if number_of_digits.rem_euclid(2) != 0 {
+            10u64.pow(number_of_digits - 1)
+        } else {
+            self.lower_bound
+        };
+
+        // upper bound
+        let number_of_digits = self.upper_bound.checked_ilog10().unwrap_or(0) + 1;
+        let new_upper_bound = if number_of_digits.rem_euclid(2) != 0 {
+            10u64.pow(number_of_digits - 1) - 1
+        } else {
+            self.upper_bound
+        };
+
+        let range = Range {
+            lower_bound: new_lower_bound,
+            upper_bound: new_upper_bound,
+        };
+
+        if range.is_valid() {
+            Ok(range)
+        } else {
+            Err("Cannot normalize range: resulting bounds are invalid".to_string())
         }
     }
 
-    pub fn preprocess(self) -> Self {
-        Range {
-            lower_bound: Range::preprocess_bound(self.lower_bound, Bound::LOWER),
-            upper_bound: Range::preprocess_bound(self.upper_bound, Bound::UPPER),
-        }
-    }
-
-    pub fn preprocess_part2(self) -> Vec<Self> {
-        let lower_digits = num_to_vec_of_digits(self.lower_bound);
-        let upper_digits = num_to_vec_of_digits(self.upper_bound);
+    /// normalize the range to have both bounds with same number of digits
+    /// Takes ownership of self and returns a Vec of Ranges.
+    /// If both bounds already have same number of digits, returns a Vec with self.
+    /// If not, returns a Vec of Ranges with same number of digits covering the original range.
+    pub fn normalize_digit_significance(self) -> Vec<Range> {
+        let lower_digits = utils::vector_of_digits(self.lower_bound);
+        let upper_digits = utils::vector_of_digits(self.upper_bound);
 
         if lower_digits.len() == upper_digits.len() {
             return vec![self];
@@ -52,14 +68,8 @@ impl Range {
             .collect::<Vec<Range>>()
     }
 
+    /// Check if the range is valid (lower_bound <= upper_bound)
     pub fn is_valid(&self) -> bool {
         self.lower_bound <= self.upper_bound
     }
-}
-
-fn num_to_vec_of_digits(n: u64) -> Vec<u8> {
-    n.to_string()
-        .chars()
-        .map(|c| c.to_digit(10).unwrap() as u8)
-        .collect()
 }
