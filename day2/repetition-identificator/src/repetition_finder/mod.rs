@@ -68,7 +68,7 @@ impl Range {
         };
 
         if lower_half.len() == 0 {
-            println!("Damn what's happening")
+            println!("Damn what's happening");
         }
 
         let possible_digits = lower_half[0]..=upper_half[0];
